@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#3d4653">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="manifest.json?v=0.7">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="stylesheet" href="style.css?v=0.7">
+  <title>사진 문장 넣기</title>
+</head>
+<body>
+  <main class="app">
+    <div class="title-row"><h1>사진 문장 넣기</h1><span class="version">ver. 0.7</span></div>
+    <p class="help">사진 위의 문장 상자를 손가락으로 바로 끌어 옮기세요.</p>
+
+    <section class="controls" aria-label="사진과 문장 설정">
+      <label class="file-label">사진 선택<input id="photoInput" type="file" accept="image/*"></label>
+      <p class="fixed-note">문장은 최대 8개까지 넣을 수 있어요. 빈 칸은 사진에 표시되지 않습니다.</p>
+      <div id="textInputs" class="text-inputs"></div>
+      <button id="saveButton" type="button" disabled>사진으로 저장 / 공유</button>
+      <button id="resetButton" class="secondary-button" type="button">새 작업 시작</button>
+      <p id="status" class="status" role="status"></p>
+    </section>
+
+    <section id="editor" class="editor" hidden>
+      <p class="drag-help">문장 상자를 사진 위에서 드래그해 위치를 조정하세요.</p>
+      <div id="stageArea" class="stage-area">
+        <div id="stageWrap" class="stage-wrap">
+          <canvas id="photoCanvas"></canvas>
+          <div id="overlay" class="overlay" aria-label="문장 위치 조정 영역"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <!-- The query version deliberately bypasses an older PWA cache. -->
+  <script src="app.js?v=0.7"></script>
+</body>
+</html>
