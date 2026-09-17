@@ -14,11 +14,11 @@
 <body>
   <main class="app">
     <div class="title-row"><h1>사진에 글 넣기</h1><span class="version">ver. 0.8</span></div>
-    <p class="help">사진 위의 문장 상자를 손가락으로 바로 끌어 옮기세요.</p>
+    <p class="help">사진 위의 글 상자를 손가락으로 바로 끌어 옮기세요.</p>
 
-    <section class="controls" aria-label="사진과 문장 설정">
+    <section class="controls" aria-label="사진과 글 설정">
       <label class="file-label">사진 선택<input id="photoInput" type="file" accept="image/*"></label>
-      <p class="fixed-note">문장은 최대 8개까지 넣을 수 있어요. 빈 칸은 사진에 표시되지 않습니다.</p>
+      <p class="fixed-note">글은 최대 8개까지 넣을 수 있어요. 빈 줄은 사진에 표시되지 않습니다.</p>
       <div class="size-control" aria-label="글씨 크기">
         <span>글씨 크기</span>
         <div class="size-buttons" role="group" aria-label="글씨 크기 선택">
@@ -34,11 +34,11 @@
     </section>
 
     <section id="editor" class="editor" hidden>
-      <p class="drag-help">문장 상자를 사진 위에서 드래그해 위치를 조정하세요.</p>
+      <p class="drag-help">글 상자를 사진 위에서 드래그해 위치를 조정하세요.</p>
       <div id="stageArea" class="stage-area">
         <div id="stageWrap" class="stage-wrap">
           <canvas id="photoCanvas"></canvas>
-          <div id="overlay" class="overlay" aria-label="문장 위치 조정 영역"></div>
+          <div id="overlay" class="overlay" aria-label="글 위치 조정 영역"></div>
         </div>
       </div>
     </section>
