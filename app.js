@@ -39,7 +39,7 @@
     for (let i = 0; i < count; i++) {
       const row = document.createElement('label'); row.className = 'text-row';
       const dot = document.createElement('span'); dot.className = 'color-dot'; dot.style.background = COLORS[i % COLORS.length];
-      const input = document.createElement('input'); input.type = 'text'; input.placeholder = `문장 ${i + 1}`; input.value = old[i] || (i === 0 ? '작업 전후' : '');
+      const input = document.createElement('input'); input.type = 'text'; input.placeholder = `글 ${i + 1}`; input.value = old[i] || (i === 0 ? '작업 전후' : '');
       input.addEventListener('input', rebuildCaptions);
       // appendChild is supported by older iPhone Safari too.
       row.appendChild(dot); row.appendChild(input); textInputs.appendChild(row);
@@ -126,7 +126,7 @@
       captions = [];
       // A double animation frame waits for iPhone Safari to lay out the newly visible editor.
       requestAnimationFrame(() => requestAnimationFrame(() => { syncStageToCanvas(); rebuildCaptions(); }));
-      say('문장 상자를 사진 위에서 끌어 옮기세요.');
+      say('글 상자를 사진 위에서 끌어 옮기세요.');
     };
     image.onerror = () => say('사진을 불러오지 못했습니다. 다른 사진으로 다시 시도해 주세요.'); image.src = url;
   });
