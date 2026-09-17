@@ -1,6 +1,6 @@
 {
-  "name": "사진 문장 넣기",
-  "short_name": "사진 문장 0.7",
+  "name": "사진에 글 넣기",
+  "short_name": "사진에 글 넣기",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#f2f3f5",

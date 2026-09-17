@@ -2,7 +2,8 @@
   'use strict';
   // Fixed order requested for the eight text fields: white, red, yellow, green, orange, blue, purple, black.
   const COLORS = ['#ffffff', '#e53935', '#fdd835', '#43a047', '#fb8c00', '#1e88e5', '#8e24aa', '#111111'];
-  const FONT = 96, PAD_X = 28, PAD_Y = 18, LINE_HEIGHT = 1.25;
+  const BASE_FONT = 96, BASE_PAD_X = 28, BASE_PAD_Y = 18, LINE_HEIGHT = 1.25;
+  let FONT = BASE_FONT * 2;
   const photoInput = document.querySelector('#photoInput');
   const textInputs = document.querySelector('#textInputs');
   const canvas = document.querySelector('#photoCanvas');
@@ -14,11 +15,22 @@
   const saveButton = document.querySelector('#saveButton');
   const resetButton = document.querySelector('#resetButton');
   const status = document.querySelector('#status');
+  const sizeButtons = [...document.querySelectorAll('.size-button')];
   let sourceImage = null;
   let captions = [];
   let drag = null;
 
   function say(message) { status.textContent = message; }
+  function padX() { return BASE_PAD_X * FONT / BASE_FONT; }
+  function padY() { return BASE_PAD_Y * FONT / BASE_FONT; }
+  function setFontScale(scale) {
+    FONT = BASE_FONT * scale;
+    sizeButtons.forEach(button => {
+      const active = Number(button.dataset.size) === scale;
+      button.classList.toggle('active', active); button.setAttribute('aria-pressed', String(active));
+    });
+    layoutCaptions();
+  }
   function makeTextInputs() {
     const count = 8;
     const old = [...textInputs.querySelectorAll('input')].map(x => x.value);
@@ -80,8 +92,9 @@
     [...overlay.children].forEach(el => { if (!active.has(el)) el.remove(); });
     captions.forEach(c => {
       if (!c.element) { c.element = document.createElement('div'); c.element.className = 'caption'; c.element.addEventListener('pointerdown', beginDrag); overlay.append(c.element); }
-      const maxContent = Math.max(FONT, canvas.width - c.x - PAD_X * 2);
-      Object.assign(c.element.style, { left: `${c.x * scale}px`, top: `${c.y * scale}px`, maxWidth: `${(maxContent + PAD_X * 2) * scale}px`, fontSize: `${FONT * scale}px`, padding: `${PAD_Y * scale}px ${PAD_X * scale}px`, color: c.color });
+      const horizontalPadding = padX(), verticalPadding = padY();
+      const maxContent = Math.max(FONT, canvas.width - c.x - horizontalPadding * 2);
+      Object.assign(c.element.style, { left: `${c.x * scale}px`, top: `${c.y * scale}px`, maxWidth: `${(maxContent + horizontalPadding * 2) * scale}px`, fontSize: `${FONT * scale}px`, padding: `${verticalPadding * scale}px ${horizontalPadding * scale}px`, color: c.color });
       c.element.textContent = c.text;
     });
   }
@@ -128,11 +141,12 @@
     const out = document.createElement('canvas'); out.width = canvas.width; out.height = canvas.height; const outCtx = out.getContext('2d'); outCtx.drawImage(canvas, 0, 0);
     outCtx.textBaseline = 'top'; outCtx.font = `700 ${FONT}px -apple-system, BlinkMacSystemFont, sans-serif`;
     captions.forEach(c => {
-      const lines = getLines(c.text, Math.max(FONT, out.width - c.x - PAD_X * 2));
-      const widest = Math.min(out.width - c.x, Math.max(...lines.map(line => outCtx.measureText(line).width)) + PAD_X * 2);
-      const boxHeight = lines.length * FONT * LINE_HEIGHT + PAD_Y * 2;
+      const horizontalPadding = padX(), verticalPadding = padY();
+      const lines = getLines(c.text, Math.max(FONT, out.width - c.x - horizontalPadding * 2));
+      const widest = Math.min(out.width - c.x, Math.max(...lines.map(line => outCtx.measureText(line).width)) + horizontalPadding * 2);
+      const boxHeight = lines.length * FONT * LINE_HEIGHT + verticalPadding * 2;
       outCtx.fillStyle = 'rgba(105,105,105,.56)'; outCtx.fillRect(c.x, c.y, widest, boxHeight);
-      outCtx.fillStyle = c.color; lines.forEach((line, i) => outCtx.fillText(line, c.x + PAD_X, c.y + PAD_Y + i * FONT * LINE_HEIGHT));
+      outCtx.fillStyle = c.color; lines.forEach((line, i) => outCtx.fillText(line, c.x + horizontalPadding, c.y + verticalPadding + i * FONT * LINE_HEIGHT));
     });
     const blob = await new Promise(resolve => out.toBlob(resolve, 'image/jpeg', .92));
     const imageUrl = URL.createObjectURL(blob);
@@ -146,7 +160,8 @@
     ctx.clearRect(0, 0, canvas.width, canvas.height); editor.hidden = true; saveButton.disabled = true;
     makeTextInputs(); say('새 사진을 선택해 작업을 시작하세요.');
   });
+  sizeButtons.forEach(button => button.addEventListener('click', () => setFontScale(Number(button.dataset.size))));
   // Build these before registering any optional browser features.
   makeTextInputs();
-  if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=0.7'));
+  if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=0.8'));
 })();

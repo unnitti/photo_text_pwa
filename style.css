@@ -19,6 +19,10 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 .color-dot { width: 22px; height: 22px; border-radius: 50%; border: 1px solid #555; }
 .status { min-height: 1.2em; margin: 0; color: #5e6873; }
 .fixed-note { margin: 0; color: #58616c; font-size: 14px; line-height: 1.4; }
+.size-control { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-weight: 650; }
+.size-buttons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+.size-button { min-height: 38px; min-width: 46px; padding: 6px 10px; background: #e4e7ea; color: #33404d; }
+.size-button.active { background: #3d4653; color: #fff; }
 .editor { margin-top: 18px; }
 /* The stage is intentionally not a flex item. Its explicit pixels are set from the canvas rect. */
 .stage-area { width: 100%; text-align: center; overflow: hidden; }

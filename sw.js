@@ -1,5 +1,5 @@
-const CACHE = 'photo-text-pwa-v7';
-const ASSETS = ['./', './index.html', './style.css?v=0.7', './app.js?v=0.7', './manifest.json?v=0.7', './icon.svg'];
+const CACHE = 'photo-text-pwa-v8';
+const ASSETS = ['./', './index.html', './style.css?v=0.8', './app.js?v=0.8', './manifest.json?v=0.8', './icon.svg'];
 self.addEventListener('install', event => event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting())));
 self.addEventListener('activate', event => event.waitUntil(self.clients.claim()));
 // Network first means a changed file is picked up whenever a connection is available;
