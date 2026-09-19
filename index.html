@@ -6,35 +6,35 @@
   <meta name="theme-color" content="#3d4653">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="manifest.json?v=0.8">
-  <link rel="apple-touch-icon" href="icon.svg">
-  <link rel="stylesheet" href="style.css?v=0.8">
+  <link rel="manifest" href="manifest.json?v=0.9">
+  <link rel="icon" href="icon.png" type="image/png">
+  <link rel="apple-touch-icon" href="icon.png">
+  <link rel="stylesheet" href="style.css?v=0.9">
   <title>사진에 글 넣기</title>
 </head>
 <body>
   <main class="app">
-    <div class="title-row"><h1>사진에 글 넣기</h1><span class="version">ver. 0.8</span></div>
+    <div class="title-row"><h1>사진에 글 넣기</h1><span class="version">ver. 0.9</span></div>
     <p class="help">사진 위의 글 상자를 손가락으로 바로 끌어 옮기세요.</p>
 
     <section class="controls" aria-label="사진과 글 설정">
       <label class="file-label">사진 선택<input id="photoInput" type="file" accept="image/*"></label>
       <p class="fixed-note">글은 최대 8개까지 넣을 수 있어요. 빈 줄은 사진에 표시되지 않습니다.</p>
-      <div class="size-control" aria-label="글씨 크기">
-        <span>글씨 크기</span>
-        <div class="size-buttons" role="group" aria-label="글씨 크기 선택">
-          <button type="button" data-size="2" class="size-button active" aria-pressed="true">대</button>
-          <button type="button" data-size="1.5" class="size-button" aria-pressed="false">중</button>
-          <button type="button" data-size="1" class="size-button" aria-pressed="false">소</button>
-        </div>
-      </div>
       <div id="textInputs" class="text-inputs"></div>
+      <div class="row-controls">
+        <button id="addRowButton" type="button" class="secondary-button small-button">+ 글 추가</button>
+        <button id="removeRowButton" type="button" class="secondary-button small-button">− 줄 줄이기</button>
+      </div>
       <button id="saveButton" type="button" disabled>사진으로 저장 / 공유</button>
       <button id="resetButton" class="secondary-button" type="button">새 작업 시작</button>
       <p id="status" class="status" role="status"></p>
     </section>
 
     <section id="editor" class="editor" hidden>
-      <p class="drag-help">글 상자를 사진 위에서 드래그해 위치를 조정하세요.</p>
+      <p class="drag-help">글 상자를 사진 위에서 드래그해 위치를 조정하세요. 두 손가락으로 확대·이동하면 더 정밀하게 맞출 수 있어요.</p>
+      <div class="editor-controls">
+        <button id="resetViewButton" type="button" class="secondary-button small-button">화면 맞춤</button>
+      </div>
       <div id="stageArea" class="stage-area">
         <div id="stageWrap" class="stage-wrap">
           <canvas id="photoCanvas"></canvas>
@@ -44,6 +44,6 @@
     </section>
   </main>
   <!-- The query version deliberately bypasses an older PWA cache. -->
-  <script src="app.js?v=0.8"></script>
+  <script src="app.js?v=0.9"></script>
 </body>
 </html>

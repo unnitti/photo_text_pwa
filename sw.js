@@ -1,5 +1,5 @@
-const CACHE = 'photo-text-pwa-v10';
-const ASSETS = ['./', './index.html', './style.css?v=0.8', './app.js?v=0.8', './manifest.json?v=0.8', './icon.svg'];
+const CACHE = 'photo-text-pwa-v12';
+const ASSETS = ['./', './index.html', './style.css?v=0.9', './app.js?v=0.9', './manifest.json?v=0.9', './icon.png'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
