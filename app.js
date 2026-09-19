@@ -163,5 +163,19 @@
   sizeButtons.forEach(button => button.addEventListener('click', () => setFontScale(Number(button.dataset.size))));
   // Build these before registering any optional browser features.
   makeTextInputs();
-  if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=0.8'));
+  if ('serviceWorker' in navigator) {
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (refreshing) return;
+      refreshing = true;
+      window.location.reload();
+    });
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js?v=0.8').then((registration) => {
+        // 앱을 열 때마다 새 sw.js가 있는지 확인. 그대로면 아무 일도 안 하고,
+        // 바뀌었을 때만 새로 받아온 뒤 자동으로 새로고침됨.
+        registration.update();
+      });
+    });
+  }
 })();
