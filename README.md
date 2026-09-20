@@ -27,7 +27,7 @@
 - 완성 이미지를 바로 보기 화면으로 열어 사진 보관함에 저장
 - 홈 화면 바로가기 추가 및 오프라인 사용 지원
 
-[![사진에 글 넣기 편집 화면1](https://github.com/unnitti/photo_text_pwa/raw/main/pt1.png)](/unnitti/photo_text_pwa/blob/main/pt1.png) [![사진에 글 넣기 편집 화면2](https://github.com/unnitti/photo_text_pwa/raw/main/pt2.png)](/unnitti/photo_text_pwa/blob/main/pt2.png)
+[![사진에 글 넣기 편집 화면1](https://github.com/unnitti/photo_text_pwa/raw/main/pt1.png)](/unnitti/photo_text_pwa/blob/main/pt1.png) [![사진에 글 넣기 편집 화면2](https://github.com/unnitti/photo_text_pwa/raw/main/pt2.jpg)](/unnitti/photo_text_pwa/blob/main/pt2.jpg)
 
 ## 사용 방법
 
