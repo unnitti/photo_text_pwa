@@ -20,7 +20,7 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 .size-cycle-button { min-height: 38px; border: 0; border-radius: 8px; background: #e4e7ea; color: #33404d; font-weight: 700; padding: 6px 4px; }
 .status { min-height: 1.2em; margin: 0; color: #5e6873; }
 .fixed-note { margin: 0; color: #58616c; font-size: 14px; line-height: 1.4; }
-.row-controls { display: flex; gap: 8px; }
+.row-controls { display: flex; gap: 8px; flex-wrap: wrap; }
 .small-button { padding: 8px 10px; font-size: 14px; min-height: 38px; }
 .editor-controls { display: flex; justify-content: flex-end; margin: 0 0 10px; }
 .editor { margin-top: 18px; }

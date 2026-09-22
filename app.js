@@ -11,6 +11,7 @@
   const textInputs = document.querySelector('#textInputs');
   const addRowButton = document.querySelector('#addRowButton');
   const removeRowButton = document.querySelector('#removeRowButton');
+  const resetTextButton = document.querySelector('#resetTextButton');
   const resetViewButton = document.querySelector('#resetViewButton');
   const canvas = document.querySelector('#photoCanvas');
   const ctx = canvas.getContext('2d');
@@ -253,18 +254,28 @@
     // Keep a download fallback for browsers that disallow it.
     const link = document.createElement('a'); link.href = imageUrl; link.download = 'photo-with-text.jpg'; link.click(); say('사진 파일을 저장했습니다.');
   });
-  resetButton.addEventListener('click', () => {
-    photoInput.value = ''; sourceImage = null; captions = []; overlay.innerHTML = '';
-    ctx.clearRect(0, 0, canvas.width, canvas.height); editor.hidden = true; saveButton.disabled = true;
-    resetView();
-    // "새 작업 시작"은 줄 개수, 글 내용, 글씨 크기, 색상까지 모두 처음 상태로 되돌림.
-    // (반면 "사진 선택"으로 다음 사진만 고를 때는 이 값들을 그대로 유지함.)
+  // 줄 개수, 글 내용, 글씨 크기, 색상을 처음 상태(2줄, "수정 전후", 중 크기, 기본 색상 순서)로 되돌림.
+  // "새 작업 시작"과 "글 초기화" 버튼이 공통으로 사용.
+  function resetTextOptions() {
     visibleCount = MIN_ROWS;
     rowValues.fill('');
     rowValues[0] = '수정 전후';
     rowScales.fill(DEFAULT_ROW_TEXT_SCALE);
     rowColorIndex.forEach((_, i) => { rowColorIndex[i] = i; });
+  }
+  resetButton.addEventListener('click', () => {
+    photoInput.value = ''; sourceImage = null; captions = []; overlay.innerHTML = '';
+    ctx.clearRect(0, 0, canvas.width, canvas.height); editor.hidden = true; saveButton.disabled = true;
+    resetView();
+    // "새 작업 시작"은 사진과 함께 글 옵션도 모두 처음 상태로 되돌림.
+    // (반면 "사진 선택"으로 다음 사진만 고를 때는 이 값들을 그대로 유지함.)
+    resetTextOptions();
     makeTextInputs(); say('새 사진을 선택해 작업을 시작하세요.');
+  });
+  resetTextButton.addEventListener('click', () => {
+    // 사진은 그대로 두고, 글 관련 옵션만 처음 상태로 되돌림.
+    resetTextOptions();
+    makeTextInputs(); say('글 옵션을 기본값으로 되돌렸습니다.');
   });
   addRowButton.addEventListener('click', () => { if (visibleCount < MAX_ROWS) { visibleCount++; makeTextInputs(); } });
   removeRowButton.addEventListener('click', () => { if (visibleCount > MIN_ROWS) { visibleCount--; makeTextInputs(); } });
