@@ -4,6 +4,9 @@
   const COLORS = ['#ffffff', '#e53935', '#fdd835', '#43a047', '#fb8c00', '#1e88e5', '#8e24aa', '#111111'];
   const BASE_FONT = 96, BASE_PAD_X = 28, BASE_PAD_Y = 18, LINE_HEIGHT = 1.25;
   const MAX_ROWS = 8, MIN_ROWS = 2;
+  // 대/중/소 글씨 크기는 실제 픽셀값(110/80/50)을 BASE_FONT 대비 배율로 환산해 사용.
+  const SCALE_LARGE = 110 / BASE_FONT, SCALE_MEDIUM = 80 / BASE_FONT, SCALE_SMALL = 50 / BASE_FONT;
+  const DEFAULT_ROW_TEXT_SCALE = SCALE_MEDIUM; // 기본값 "중"
   const photoInput = document.querySelector('#photoInput');
   const textInputs = document.querySelector('#textInputs');
   const addRowButton = document.querySelector('#addRowButton');
@@ -26,8 +29,8 @@
   // 숨겨진 줄의 값은 그대로 남아있다가 다시 "+ 글 추가"를 누르면 복원됨.
   let visibleCount = MIN_ROWS;
   const rowValues = new Array(MAX_ROWS).fill('');
-  rowValues[0] = '작업 전후';
-  const rowScales = new Array(MAX_ROWS).fill(2); // 기본값 "대"
+  rowValues[0] = '수정 전후';
+  const rowScales = new Array(MAX_ROWS).fill(DEFAULT_ROW_TEXT_SCALE); // 기본값 "중"
   // 각 줄의 현재 색상은 COLORS 배열의 인덱스로 관리. 기본값은 기존과 동일하게
   // 줄 순서대로 하나씩(흰/빨/노/초/주/파/보/검), 버튼을 누르면 다음 색으로 순환.
   const rowColorIndex = COLORS.map((_, i) => i);
@@ -42,8 +45,9 @@
   function fontSize(scale) { return BASE_FONT * scale; }
   function padX(scale) { return BASE_PAD_X * scale; }
   function padY(scale) { return BASE_PAD_Y * scale; }
-  function scaleLabel(scale) { return scale === 2 ? '대' : scale === 1.5 ? '중' : '소'; }
-  function nextScale(scale) { return scale === 2 ? 1.5 : scale === 1.5 ? 1 : 2; }
+  function scaleLabel(scale) { return scale === SCALE_LARGE ? '대' : scale === SCALE_SMALL ? '소' : '중'; }
+  // 순환 순서: 대 -> 소 -> 중 -> (다시 대)
+  function nextScale(scale) { return scale === SCALE_LARGE ? SCALE_SMALL : scale === SCALE_SMALL ? SCALE_MEDIUM : SCALE_LARGE; }
 
   function updateRowButtons() {
     addRowButton.disabled = visibleCount >= MAX_ROWS;
@@ -253,8 +257,13 @@
     photoInput.value = ''; sourceImage = null; captions = []; overlay.innerHTML = '';
     ctx.clearRect(0, 0, canvas.width, canvas.height); editor.hidden = true; saveButton.disabled = true;
     resetView();
-    // rowValues/rowScales/visibleCount are deliberately kept so the same captions
-    // can be reused right away on the next photo.
+    // "새 작업 시작"은 줄 개수, 글 내용, 글씨 크기, 색상까지 모두 처음 상태로 되돌림.
+    // (반면 "사진 선택"으로 다음 사진만 고를 때는 이 값들을 그대로 유지함.)
+    visibleCount = MIN_ROWS;
+    rowValues.fill('');
+    rowValues[0] = '수정 전후';
+    rowScales.fill(DEFAULT_ROW_TEXT_SCALE);
+    rowColorIndex.forEach((_, i) => { rowColorIndex[i] = i; });
     makeTextInputs(); say('새 사진을 선택해 작업을 시작하세요.');
   });
   addRowButton.addEventListener('click', () => { if (visibleCount < MAX_ROWS) { visibleCount++; makeTextInputs(); } });
