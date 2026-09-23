@@ -7,8 +7,8 @@
   // 대/중/소 글씨 크기는 실제 폰트 px 값을 그대로 사용.
   const FONT_PX_LARGE = 240, FONT_PX_MEDIUM = 180, FONT_PX_SMALL = 120;
   const DEFAULT_FONT_SIZE = FONT_PX_MEDIUM; // 기본값 "중"
-  // 글 상자 여백은 폰트 크기에 비례. 28px/18px 여백이 96px 폰트 기준이었던 것을 비율로 미리 계산해둔 값.
-  const PAD_X_RATIO = 28 / 96, PAD_Y_RATIO = 18 / 96;
+  // 글 상자 여백은 폰트 크기에 비례 (가로 29%, 세로 19%).
+  const PAD_X_RATIO = 0.29, PAD_Y_RATIO = 0.19;
   const photoInput = document.querySelector('#photoInput');
   const textInputs = document.querySelector('#textInputs');
   const addRowButton = document.querySelector('#addRowButton');
