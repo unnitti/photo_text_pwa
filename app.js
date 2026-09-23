@@ -2,11 +2,13 @@
   'use strict';
   // Fixed order requested for the eight text fields: white, red, yellow, green, orange, blue, purple, black.
   const COLORS = ['#ffffff', '#e53935', '#fdd835', '#43a047', '#fb8c00', '#1e88e5', '#8e24aa', '#111111'];
-  const BASE_FONT = 96, BASE_PAD_X = 28, BASE_PAD_Y = 18, LINE_HEIGHT = 1.25;
+  const LINE_HEIGHT = 1.25;
   const MAX_ROWS = 8, MIN_ROWS = 2;
-  // 대/중/소 글씨 크기는 실제 픽셀값(110/80/50)을 BASE_FONT 대비 배율로 환산해 사용.
-  const SCALE_LARGE = 110 / BASE_FONT, SCALE_MEDIUM = 80 / BASE_FONT, SCALE_SMALL = 50 / BASE_FONT;
-  const DEFAULT_ROW_TEXT_SCALE = SCALE_MEDIUM; // 기본값 "중"
+  // 대/중/소 글씨 크기는 실제 폰트 px 값을 그대로 사용.
+  const FONT_PX_LARGE = 240, FONT_PX_MEDIUM = 180, FONT_PX_SMALL = 120;
+  const DEFAULT_FONT_SIZE = FONT_PX_MEDIUM; // 기본값 "중"
+  // 글 상자 여백은 폰트 크기에 비례. 28px/18px 여백이 96px 폰트 기준이었던 것을 비율로 미리 계산해둔 값.
+  const PAD_X_RATIO = 28 / 96, PAD_Y_RATIO = 18 / 96;
   const photoInput = document.querySelector('#photoInput');
   const textInputs = document.querySelector('#textInputs');
   const addRowButton = document.querySelector('#addRowButton');
@@ -31,7 +33,7 @@
   let visibleCount = MIN_ROWS;
   const rowValues = new Array(MAX_ROWS).fill('');
   rowValues[0] = '수정 전후';
-  const rowScales = new Array(MAX_ROWS).fill(DEFAULT_ROW_TEXT_SCALE); // 기본값 "중"
+  const rowFontSizes = new Array(MAX_ROWS).fill(DEFAULT_FONT_SIZE); // 기본값 "중"
   // 각 줄의 현재 색상은 COLORS 배열의 인덱스로 관리. 기본값은 기존과 동일하게
   // 줄 순서대로 하나씩(흰/빨/노/초/주/파/보/검), 버튼을 누르면 다음 색으로 순환.
   const rowColorIndex = COLORS.map((_, i) => i);
@@ -43,12 +45,11 @@
   let zoomGesture = null;
 
   function say(message) { status.textContent = message; }
-  function fontSize(scale) { return BASE_FONT * scale; }
-  function padX(scale) { return BASE_PAD_X * scale; }
-  function padY(scale) { return BASE_PAD_Y * scale; }
-  function scaleLabel(scale) { return scale === SCALE_LARGE ? '대' : scale === SCALE_SMALL ? '소' : '중'; }
+  function padX(fontPx) { return fontPx * PAD_X_RATIO; }
+  function padY(fontPx) { return fontPx * PAD_Y_RATIO; }
+  function fontSizeLabel(fontPx) { return fontPx === FONT_PX_LARGE ? '대' : fontPx === FONT_PX_SMALL ? '소' : '중'; }
   // 순환 순서: 대 -> 소 -> 중 -> (다시 대)
-  function nextScale(scale) { return scale === SCALE_LARGE ? SCALE_SMALL : scale === SCALE_SMALL ? SCALE_MEDIUM : SCALE_LARGE; }
+  function nextFontSize(fontPx) { return fontPx === FONT_PX_LARGE ? FONT_PX_SMALL : fontPx === FONT_PX_SMALL ? FONT_PX_MEDIUM : FONT_PX_LARGE; }
 
   function updateRowButtons() {
     addRowButton.disabled = visibleCount >= MAX_ROWS;
@@ -69,9 +70,9 @@
       const input = document.createElement('input'); input.type = 'text'; input.placeholder = `글 ${i + 1}`; input.value = rowValues[i] || '';
       input.addEventListener('input', () => { rowValues[i] = input.value; rebuildCaptions(); });
       const sizeBtn = document.createElement('button'); sizeBtn.type = 'button'; sizeBtn.className = 'size-cycle-button';
-      sizeBtn.textContent = scaleLabel(rowScales[i]); sizeBtn.setAttribute('aria-label', `${i + 1}번째 글 크기 변경`);
+      sizeBtn.textContent = fontSizeLabel(rowFontSizes[i]); sizeBtn.setAttribute('aria-label', `${i + 1}번째 글 크기 변경`);
       sizeBtn.addEventListener('click', () => {
-        rowScales[i] = nextScale(rowScales[i]); sizeBtn.textContent = scaleLabel(rowScales[i]); rebuildCaptions();
+        rowFontSizes[i] = nextFontSize(rowFontSizes[i]); sizeBtn.textContent = fontSizeLabel(rowFontSizes[i]); rebuildCaptions();
       });
       // appendChild is supported by older iPhone Safari too.
       row.appendChild(colorBtn); row.appendChild(input); row.appendChild(sizeBtn); textInputs.appendChild(row);
@@ -79,8 +80,8 @@
     updateRowButtons();
     rebuildCaptions();
   }
-  function getLines(text, maxWidth, scale) {
-    ctx.font = `700 ${fontSize(scale)}px -apple-system, BlinkMacSystemFont, sans-serif`;
+  function getLines(text, maxWidth, fontPx) {
+    ctx.font = `700 ${fontPx}px -apple-system, BlinkMacSystemFont, sans-serif`;
     const lines = [];
     for (const paragraph of String(text).split('\n')) {
       let line = '';
@@ -117,7 +118,7 @@
       // All boxes start inside the image. These are only initial positions;
       // every box can still be dragged anywhere on the photo.
       next.push({
-        index: i, text, color: COLORS[rowColorIndex[i]], scale: rowScales[i],
+        index: i, text, color: COLORS[rowColorIndex[i]], fontPx: rowFontSizes[i],
         x: previous ? previous.x : canvas.width * .08,
         y: previous ? previous.y : canvas.height * (.04 + i * .105),
         element: previous && previous.element
@@ -133,8 +134,8 @@
     [...overlay.children].forEach(el => { if (!active.has(el)) el.remove(); });
     captions.forEach(c => {
       if (!c.element) { c.element = document.createElement('div'); c.element.className = 'caption'; c.element.addEventListener('pointerdown', beginDrag); overlay.append(c.element); }
-      const font = fontSize(c.scale);
-      const horizontalPadding = padX(c.scale), verticalPadding = padY(c.scale);
+      const font = c.fontPx;
+      const horizontalPadding = padX(c.fontPx), verticalPadding = padY(c.fontPx);
       const maxContent = Math.max(font, canvas.width - c.x - horizontalPadding * 2);
       Object.assign(c.element.style, { left: `${c.x * displayScale}px`, top: `${c.y * displayScale}px`, maxWidth: `${(maxContent + horizontalPadding * 2) * displayScale}px`, fontSize: `${font * displayScale}px`, padding: `${verticalPadding * displayScale}px ${horizontalPadding * displayScale}px`, color: c.color });
       c.element.textContent = c.text;
@@ -238,10 +239,10 @@
     const out = document.createElement('canvas'); out.width = canvas.width; out.height = canvas.height; const outCtx = out.getContext('2d'); outCtx.drawImage(canvas, 0, 0);
     outCtx.textBaseline = 'top';
     captions.forEach(c => {
-      const font = fontSize(c.scale);
+      const font = c.fontPx;
       outCtx.font = `700 ${font}px -apple-system, BlinkMacSystemFont, sans-serif`;
-      const horizontalPadding = padX(c.scale), verticalPadding = padY(c.scale);
-      const lines = getLines(c.text, Math.max(font, out.width - c.x - horizontalPadding * 2), c.scale);
+      const horizontalPadding = padX(c.fontPx), verticalPadding = padY(c.fontPx);
+      const lines = getLines(c.text, Math.max(font, out.width - c.x - horizontalPadding * 2), c.fontPx);
       const widest = Math.min(out.width - c.x, Math.max(...lines.map(line => outCtx.measureText(line).width)) + horizontalPadding * 2);
       const boxHeight = lines.length * font * LINE_HEIGHT + verticalPadding * 2;
       outCtx.fillStyle = 'rgba(105,105,105,.56)'; outCtx.fillRect(c.x, c.y, widest, boxHeight);
@@ -260,7 +261,7 @@
     visibleCount = MIN_ROWS;
     rowValues.fill('');
     rowValues[0] = '수정 전후';
-    rowScales.fill(DEFAULT_ROW_TEXT_SCALE);
+    rowFontSizes.fill(DEFAULT_FONT_SIZE);
     rowColorIndex.forEach((_, i) => { rowColorIndex[i] = i; });
   }
   resetButton.addEventListener('click', () => {
