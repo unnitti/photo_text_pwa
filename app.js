@@ -301,7 +301,7 @@
       window.location.reload();
     });
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js?v=0.8').then((registration) => {
+      navigator.serviceWorker.register('./sw.js?v=0.10').then((registration) => {
         // 앱을 열 때마다 새 sw.js가 있는지 확인. 그대로면 아무 일도 안 하고,
         // 바뀌었을 때만 새로 받아온 뒤 자동으로 새로고침됨.
         registration.update();
