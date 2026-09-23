@@ -290,7 +290,16 @@
     makeTextInputs(); say('글 옵션을 기본값으로 되돌렸습니다.');
   });
   addRowButton.addEventListener('click', () => { if (visibleCount < MAX_ROWS) { visibleCount++; makeTextInputs(); } });
-  removeRowButton.addEventListener('click', () => { if (visibleCount > MIN_ROWS) { visibleCount--; makeTextInputs(); } });
+  removeRowButton.addEventListener('click', () => {
+  if (visibleCount > MIN_ROWS) {
+    const removedIndex = visibleCount - 1;
+    rowValues[removedIndex] = '';
+    rowFontSizes[removedIndex] = DEFAULT_FONT_SIZE;
+    rowColorIndex[removedIndex] = removedIndex;
+    visibleCount--;
+    makeTextInputs();
+  }
+  });
   // Build these before registering any optional browser features.
   makeTextInputs();
   if ('serviceWorker' in navigator) {
@@ -301,7 +310,7 @@
       window.location.reload();
     });
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js?v=0.10').then((registration) => {
+      navigator.serviceWorker.register('./sw.js?v=0.11').then((registration) => {
         // 앱을 열 때마다 새 sw.js가 있는지 확인. 그대로면 아무 일도 안 하고,
         // 바뀌었을 때만 새로 받아온 뒤 자동으로 새로고침됨.
         registration.update();
