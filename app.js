@@ -7,8 +7,8 @@
   // 대/중/소 글씨 크기는 실제 폰트 px 값을 그대로 사용.
   const FONT_PX_LARGE = 240, FONT_PX_MEDIUM = 180, FONT_PX_SMALL = 120;
   const DEFAULT_FONT_SIZE = FONT_PX_MEDIUM; // 기본값 "중"
-  // 글 상자 여백은 폰트 크기에 비례 (가로 29%, 세로 19%).
-  const PAD_X_RATIO = 0.29, PAD_Y_RATIO = 0.19;
+  // 글 상자 여백은 폰트 크기에 비례. 28px/18px 여백이 96px 폰트 기준이었던 것을 비율로 미리 계산해둔 값.
+  const PAD_X_RATIO = 28 / 96, PAD_Y_RATIO = 18 / 96;
   const photoInput = document.querySelector('#photoInput');
   const textInputs = document.querySelector('#textInputs');
   const addRowButton = document.querySelector('#addRowButton');
@@ -69,6 +69,17 @@
       });
       const input = document.createElement('input'); input.type = 'text'; input.placeholder = `글 ${i + 1}`; input.value = rowValues[i] || '';
       input.addEventListener('input', () => { rowValues[i] = input.value; rebuildCaptions(); });
+      input.addEventListener('blur', () => {
+        // 입력 중엔 그대로 두고, 칸을 벗어날 때 안의 숫자 덩어리(연속된 숫자)를 하나씩 검사.
+        // 그 덩어리가 정확히 6자리일 때만 "26.09.12" 형식으로 변환. 5자리 이하나 7자리 이상으로
+        // 이어진 숫자 덩어리, 영문/기호는 그대로 둠. "260912~260913"처럼 구분자로 섞어 써도
+        // 각 6자리 덩어리가 따로따로 변환됨.
+        const value = input.value;
+        const formatted = value.replace(/\d+/g, (run) => (
+          run.length === 6 ? `${run.slice(0, 2)}.${run.slice(2, 4)}.${run.slice(4, 6)}` : run
+        ));
+        if (formatted !== value) { input.value = formatted; rowValues[i] = formatted; rebuildCaptions(); }
+      });
       const sizeBtn = document.createElement('button'); sizeBtn.type = 'button'; sizeBtn.className = 'size-cycle-button';
       sizeBtn.textContent = fontSizeLabel(rowFontSizes[i]); sizeBtn.setAttribute('aria-label', `${i + 1}번째 글 크기 변경`);
       sizeBtn.addEventListener('click', () => {
