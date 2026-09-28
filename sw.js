@@ -1,5 +1,13 @@
-const CACHE = 'photo-text-pwa-v14';
-const ASSETS = ['./', './index.html', './style.css?v=0.11', './app.js?v=0.11', './manifest.json?v=0.11', './icon.png'];
+const CACHE = 'photo-text-pwa-v15';
+
+const ASSETS = [
+  './',
+  './index.html',
+  './style.css',
+  './app.js',
+  './manifest.json',
+  './icon.png'
+];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -12,24 +20,43 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys()
-      .then((names) => Promise.all(names.filter((n) => n !== CACHE).map((n) => caches.delete(n))))
+      .then((names) =>
+        Promise.all(
+          names
+            .filter((n) => n !== CACHE)
+            .map((n) => caches.delete(n))
+        )
+      )
       .then(() => self.clients.claim())
   );
 });
 
-// 캐시 우선: 캐시에 있으면 그걸 쓰고(데이터 안 씀), 없을 때만 네트워크에서 받아서 캐시에 저장
+// 캐시가 있으면 즉시 사용하고,
+// 온라인이면 백그라운드에서 최신 파일을 받아 캐시를 갱신.
+// 네트워크가 없으면 기존 캐시로 계속 작동.
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
+
   event.respondWith(
     caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-      return fetch(event.request)
+
+      const networkFetch = fetch(event.request)
         .then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE).then((cache) => cache.put(event.request, copy));
+
+          if (response && response.ok) {
+            const copy = response.clone();
+
+            caches.open(CACHE).then((cache) => {
+              cache.put(event.request, copy);
+            });
+          }
+
           return response;
         })
         .catch(() => cached);
+
+      return cached || networkFetch;
+
     })
   );
 });
