@@ -1,4 +1,4 @@
-const CACHE = 'photo-text-pwa-v15';
+const CACHE = 'photo-text-cache-v01';
 
 const ASSETS = [
   './',
