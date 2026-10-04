@@ -14,36 +14,31 @@
 </head>
 <body>
   <main class="app">
-    <div class="title-row"><h1>사진에 글 넣기</h1><span class="version">ver. 0.11</span></div>
-    <p class="help">사진 위의 글 상자를 손가락으로 바로 끌어 옮기세요.</p>
+    <div class="title-row"><h1>사진에 글 넣기</h1><span class="version">ver. 0.12</span></div>
 
-    <section class="controls" aria-label="사진과 글 설정">
-      <label class="file-label">사진 선택<input id="photoInput" type="file" accept="image/*"></label>
-      <p class="fixed-note">글은 최대 8줄까지 넣을 수 있어요. 빈 줄은 사진에 표시되지 않습니다.</p>
+    <section class="controls" aria-label="글 설정">
       <div id="textInputs" class="text-inputs"></div>
-      <div class="row-controls">
-        <button id="addRowButton" type="button" class="secondary-button small-button">+ 줄 추가</button>
-        <button id="removeRowButton" type="button" class="secondary-button small-button">− 줄 삭제</button>
-        <button id="resetTextButton" type="button" class="secondary-button small-button">글 초기화</button>
-      </div>
-      <button id="saveButton" type="button" disabled>사진으로 저장 / 공유</button>
-      <button id="resetButton" class="secondary-button" type="button">새 작업 시작</button>
-      <p id="status" class="status" role="status"></p>
+      <button id="clearTextButton" type="button" class="text-link">글 모두 지우기</button>
     </section>
 
     <section id="editor" class="editor" hidden>
-      <p class="drag-help">글 상자를 사진 위에서 드래그해 위치를 조정하세요. 두 손가락으로 확대·이동하면 더 정밀하게 맞출 수 있어요.</p>
-      <div class="editor-controls">
-        <button id="resetViewButton" type="button" class="secondary-button small-button">화면 맞춤</button>
-      </div>
       <div id="stageArea" class="stage-area">
         <div id="stageWrap" class="stage-wrap">
           <canvas id="photoCanvas"></canvas>
           <div id="overlay" class="overlay" aria-label="글 위치 조정 영역"></div>
         </div>
       </div>
+      <p class="drag-help">글 상자를 끌어 위치를 조정하세요. 두 손가락으로 확대·이동할 수 있어요.</p>
     </section>
+
+    <div class="actions">
+      <label class="file-label"><span id="photoLabelText">사진 선택</span><input id="photoInput" type="file" accept="image/*"></label>
+      <button id="saveButton" type="button" disabled>저장</button>
+    </div>
+    <p class="save-hint">저장을 누르면 완성 사진이 열려요. 공유 버튼 → 이미지 저장을 눌러야 사진 보관함에 들어갑니다.</p>
+    <p id="status" class="status" role="status"></p>
   </main>
+  <div id="undoToast" class="toast" role="status" hidden><span id="undoText"></span><button id="undoButton" type="button">되돌리기</button></div>
   <!-- 오래된 PWA 캐시를 우회하기 위해 query version을 사용했다가 삭제함 -->
   <script src="app.js"></script>
 </body>
