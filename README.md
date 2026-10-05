@@ -24,7 +24,10 @@
 - 완성 이미지를 열어 공유 → 이미지 저장으로 사진 보관함에 저장
 - 홈 화면 추가 및 오프라인 사용 지원
 
-[![사진에 글 넣기 편집 화면1](https://github.com/unnitti/photo_text_pwa/raw/main/pt1.png)](/unnitti/photo_text_pwa/blob/main/pt1.png) [![사진에 글 넣기 편집 화면2](https://github.com/unnitti/photo_text_pwa/raw/main/pt2.jpg)](/unnitti/photo_text_pwa/blob/main/pt2.jpg)
+<p>
+  <a href="screenshot/01.jpg"><img src="screenshot/01.jpg" alt="사진에 글 넣기 편집 화면1" width="320"></a>
+  <a href="screenshot/02.jpg"><img src="screenshot/02.jpg" alt="사진에 글 넣기 편집 화면2" width="320"></a>
+</p>
 
 ## 사용 방법
 
