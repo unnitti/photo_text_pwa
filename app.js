@@ -314,7 +314,6 @@
       resetView();
       // A double animation frame waits for iPhone Safari to lay out the newly visible editor.
       requestAnimationFrame(() => requestAnimationFrame(() => { syncStageToCanvas(); rebuildCaptions(); }));
-      say('글 상자를 사진 위에서 끌어 옮기세요.');
     };
     image.onerror = () => say('사진을 불러오지 못했습니다. 다른 사진으로 다시 시도해 주세요.'); image.src = url;
   });
