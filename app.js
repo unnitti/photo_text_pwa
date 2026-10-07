@@ -15,9 +15,10 @@
   const TEXT_SHADOW = 'rgba(0, 0, 0, .45)';
   const SNAP_SCALE = 1.02; // 이 배율 이하로 줄이면 사진 전체에 딱 맞는 상태로 돌아감
   const UNDO_MS = 6000;
-  // true면 새 창을 열지 않고 같은 화면에서 완성 사진을 엶(iPhone에서는 아래 공유 아이콘 → 이미지 저장).
-  // false면 탭하는 순간 새 창을 먼저 열어 그 창에 완성 사진을 보여 줌. iOS가 달라져 true가 안 되면 false로 되돌림.
-  const INLINE_PREVIEW = true;
+  // false(기본): 탭하는 순간 새 창을 먼저 열어 그 창에 완성 사진을 보여 줌. 앱 화면은 그대로 남음.
+  // true: 새 창 없이 같은 화면에서 파일처럼 엶. iPhone에서 화면이 때마다 달라지고, 파일이 다운로드 폴더에 생기며,
+  // 뒤로 가면 사진이 사라질 수 있어 사용하지 않음(CHANGELOG 참고).
+  const INLINE_PREVIEW = false;
   const photoInput = document.querySelector('#photoInput');
   const textInputs = document.querySelector('#textInputs');
   const clearTextButton = document.querySelector('#clearTextButton');
