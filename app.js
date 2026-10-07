@@ -15,8 +15,9 @@
   const TEXT_SHADOW = 'rgba(0, 0, 0, .45)';
   const SNAP_SCALE = 1.02; // 이 배율 이하로 줄이면 사진 전체에 딱 맞는 상태로 돌아감
   const UNDO_MS = 6000;
-  // true면 미리보기 화면 없이 iOS 공유 시트를 바로 엶(실험). 기기 확인 전까지 false.
-  const SHARE_SHEET_FIRST = true;
+  // true면 새 창을 열지 않고 같은 화면에서 완성 사진을 엶(iPhone에서는 아래 공유 아이콘 → 이미지 저장).
+  // false면 탭하는 순간 새 창을 먼저 열어 그 창에 완성 사진을 보여 줌. iOS가 달라져 true가 안 되면 false로 되돌림.
+  const INLINE_PREVIEW = true;
   const photoInput = document.querySelector('#photoInput');
   const textInputs = document.querySelector('#textInputs');
   const clearTextButton = document.querySelector('#clearTextButton');
@@ -322,10 +323,9 @@
   window.addEventListener('resize', () => requestAnimationFrame(syncStageToCanvas));
   saveButton.addEventListener('click', async () => {
     if (!hasPhoto || !canvas.width) return;
-    const useShareSheet = SHARE_SHEET_FIRST && typeof navigator.share === 'function' && typeof navigator.canShare === 'function';
-    // 기본 방식: 탭하는 순간 새 창을 먼저 열어 iPhone Safari의 팝업 차단을 피함.
-    // 완성된 JPEG가 이 창을 대체해 바로 이미지 화면이 됨. 공유 시트 방식에서는 새 창을 열지 않음.
-    const preview = useShareSheet ? null : window.open('', '_blank');
+    // 새 창 방식(INLINE_PREVIEW=false): 탭하는 순간 새 창을 먼저 열어 iPhone Safari의 팝업 차단을 피함.
+    // 완성된 JPEG가 이 창을 대체해 바로 이미지 화면이 됨. 같은 화면 방식에서는 새 창을 열지 않음.
+    const preview = INLINE_PREVIEW ? null : window.open('', '_blank');
     const out = document.createElement('canvas'); out.width = canvas.width; out.height = canvas.height; const outCtx = out.getContext('2d'); outCtx.drawImage(canvas, 0, 0);
     outCtx.textBaseline = 'top';
     captions.forEach(c => {
@@ -344,20 +344,12 @@
     const blob = await new Promise(resolve => out.toBlob(resolve, 'image/jpeg', .92));
     out.width = 0; out.height = 0; // 큰 캔버스가 차지한 메모리를 바로 돌려줌
     if (!blob) { if (preview) preview.close(); say('이미지를 만들지 못했어요. 다시 시도해 주세요.'); return; }
-    if (useShareSheet) {
-      // 실험 기능: 미리보기를 거치지 않고 iOS 공유 시트를 바로 엶. 실패하면 아래 파일 저장으로 넘어감.
-      const file = new File([blob], 'photo-with-text.jpg', { type: 'image/jpeg' });
-      if (navigator.canShare({ files: [file] })) {
-        try { await navigator.share({ files: [file] }); say('공유 화면에서 “이미지 저장”을 누르면 사진 보관함에 저장돼요.'); return; }
-        catch (err) { if (err && err.name === 'AbortError') { say('저장을 취소했어요.'); return; } }
-      }
-    }
     if (lastPreviewUrl) URL.revokeObjectURL(lastPreviewUrl);
     const imageUrl = URL.createObjectURL(blob); lastPreviewUrl = imageUrl;
-    if (preview) { preview.location.replace(imageUrl); say('완성 사진을 새 화면으로 열었습니다. 그 화면의 공유 버튼에서 “이미지 저장”을 누르세요.'); return; }
-    // Popup blocking is unusual on iPhone because the window was opened at tap time.
-    // Keep a download fallback for browsers that disallow it.
-    const link = document.createElement('a'); link.href = imageUrl; link.download = 'photo-with-text.jpg'; link.click(); say('사진 파일을 저장했습니다.');
+    if (preview) { preview.location.replace(imageUrl); say(''); return; }
+    // 같은 화면 방식: 파일 열기 동작으로 완성 사진을 앱 안의 보기 화면에 띄움. iPhone에서는 파일로 자동 저장되지 않고
+    // 아래 공유 아이콘에서 이미지 저장을 눌러야 함. iOS 동작에 의존하므로 달라지면 INLINE_PREVIEW=false로 되돌림.
+    const link = document.createElement('a'); link.href = imageUrl; link.download = 'photo-with-text.jpg'; link.click(); say('');
   });
   // 줄 개수, 글 내용, 글씨 크기, 색상을 처음 상태(2줄, 빈 글, 중 크기, 기본 색상 순서)로 되돌림.
   function resetTextOptions() {
