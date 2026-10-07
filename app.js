@@ -16,7 +16,7 @@
   const SNAP_SCALE = 1.02; // 이 배율 이하로 줄이면 사진 전체에 딱 맞는 상태로 돌아감
   const UNDO_MS = 6000;
   // true면 미리보기 화면 없이 iOS 공유 시트를 바로 엶(실험). 기기 확인 전까지 false.
-  const SHARE_SHEET_FIRST = false;
+  const SHARE_SHEET_FIRST = true;
   const photoInput = document.querySelector('#photoInput');
   const textInputs = document.querySelector('#textInputs');
   const clearTextButton = document.querySelector('#clearTextButton');
