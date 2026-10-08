@@ -1,4 +1,4 @@
-const CACHE = 'photo-text-cache-v01';
+const CACHE = 'photo-text-cache-v02';
 
 const ASSETS = [
   './',
@@ -7,6 +7,8 @@ const ASSETS = [
   './app.js',
   './manifest.json',
   './icons/icon-192.png',
+  './icons/icon-512.png',
+  './icons/icon-maskable-512.png',
   './icons/apple-touch-icon.png'
 ];
 
@@ -24,40 +26,33 @@ self.addEventListener('activate', (event) => {
       .then((names) =>
         Promise.all(
           names
-            .filter((n) => n !== CACHE)
-            .map((n) => caches.delete(n))
+            .filter((name) => name !== CACHE)
+            .map((name) => caches.delete(name))
         )
       )
       .then(() => self.clients.claim())
   );
 });
 
-// 캐시가 있으면 즉시 사용하고,
-// 온라인이면 백그라운드에서 최신 파일을 받아 캐시를 갱신.
-// 네트워크가 없으면 기존 캐시로 계속 작동.
+// 캐시가 있으면 즉시 사용하고, 온라인이면 백그라운드에서 최신 파일로 갱신합니다.
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
   event.respondWith(
     caches.match(event.request).then((cached) => {
-
       const networkFetch = fetch(event.request)
         .then((response) => {
-
           if (response && response.ok) {
             const copy = response.clone();
-
             caches.open(CACHE).then((cache) => {
               cache.put(event.request, copy);
             });
           }
-
           return response;
         })
         .catch(() => cached);
 
       return cached || networkFetch;
-
     })
   );
 });
