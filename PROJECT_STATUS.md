@@ -1,7 +1,7 @@
 # Project Status
 
 ## 현재 상태
-- 앱 버전: v0.14
+- 앱 버전: v0.14 (index.html의 화면 표시와 일치)
 - 서비스 워커 캐시: photo-text-cache-v01 (sw.js의 ASSETS 목록은 바뀌지 않아 캐시 버전은 그대로)
 - 현재 개발 단계: 기능 및 디자인 개선 후 테스트
 
@@ -39,7 +39,8 @@
 - 서비스 워커를 cache first 방식에서 stale-while-revalidate 방식으로 변경
 
 ## 미확인 기능
-없음
+- Safari 탭에서의 동작: 미확인
+- Android 브라우저/PWA 동작: 미확인
 
 ## 알려진 버그
 - `INLINE_PREVIEW=true`(같은 화면 방식): iPhone에서 저장 후 화면이 이미지 미리보기 또는 파일 정보 화면으로 때마다 달라지고, 다운로드 폴더에 파일이 생기며, 뒤로 가면 사진이 사라질 수 있음. 사용하지 않음
