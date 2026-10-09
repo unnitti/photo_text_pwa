@@ -7,6 +7,7 @@
   // 대/중/소 글씨 크기는 실제 폰트 px 값을 그대로 사용.
   const FONT_PX_LARGE = 240, FONT_PX_MEDIUM = 180, FONT_PX_SMALL = 120;
   const DEFAULT_FONT_SIZE = FONT_PX_MEDIUM; // 기본값 "중"
+  const DEFAULT_TEXT = '수정 전후'; // 첫 번째 줄의 초기 문구
   // 글 상자 여백은 폰트 크기에 비례. 28px/18px 여백이 96px 폰트 기준이었던 것을 비율로 미리 계산해둔 값.
   const PAD_X_RATIO = 28 / 96, PAD_Y_RATIO = 18 / 96;
   // 글 상자 모양. 화면(CSS)과 저장 이미지(canvas)가 같은 값을 쓰도록 한곳에 모아 둠.
@@ -43,7 +44,7 @@
   // 문장별로 따로 관리하는 텍스트/글씨크기/색상. 마지막 줄에 글을 쓰면 줄이 하나씩 자동으로 늘어남.
   let visibleCount = MIN_ROWS;
   const rowValues = new Array(MAX_ROWS).fill('');
-  rowValues[0] = '수정 전후';
+  rowValues[0] = DEFAULT_TEXT;
   const rowFontSizes = new Array(MAX_ROWS).fill(DEFAULT_FONT_SIZE); // 기본값 "중"
   // 각 줄의 색상은 COLORS 배열의 인덱스. 글을 처음 쓰는 줄에는 아직 쓰이지 않은 첫 색을 자동으로 주고(rowColorAuto),
   // 색 버튼을 직접 누른 줄은 자동 배정을 멈춤. 버튼은 8색을 건너뜀 없이 순서대로 순환.
@@ -356,13 +357,14 @@
   function resetTextOptions() {
     visibleCount = MIN_ROWS;
     rowValues.fill('');
+    rowValues[0] = DEFAULT_TEXT;
     rowFontSizes.fill(DEFAULT_FONT_SIZE);
     rowColorIndex.forEach((_, i) => { rowColorIndex[i] = i; });
     rowColorAuto.fill(true);
   }
   clearTextButton.addEventListener('click', () => {
     // 사진은 그대로 두고 글만 모두 지움. 몇 초 동안 되돌릴 수 있음(사진은 되돌림 대상이 아님).
-    const count = filledCount();
+    const count = rowValues.reduce((n, value, i) => n + (String(value || '').trim() && (i !== 0 || value !== DEFAULT_TEXT) ? 1 : 0), 0);
     if (!count) { say('지울 글이 없어요.'); return; }
     const snapshot = takeSnapshot();
     resetTextOptions(); makeTextInputs();
